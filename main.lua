@@ -48,7 +48,7 @@ end
 
 
 if game.PlaceId == 109983668079237 or 1+1==2 then
-	Notify("bozoHub Loaded, Steal A Brainrot detected ",3.5)
+	Notify("bozoHub Loaded, Steal A Brainrot detected update 2",3.5)
 	repeat
 		task.wait()
 	until game.Players.LocalPlayer.Backpack:FindFirstChild("Tung Bat")
