@@ -1,3 +1,4 @@
+local a = game:GetService("PlacesService")
 local oh
 local gui
 local tws = game:GetService("TweenService")
@@ -70,8 +71,7 @@ local function killAuraLoop()
 						local dist = (hrp.Position - otchr:FindFirstChild("HumanoidRootPart").Position).Magnitude
 						if dist <= 10 and not attacked[pl] then
 							attacked[pl]=true
-							local cframe = CFrame.new(otchr:FindFirstChild("HumanoidRootPart").Position * (-otchr:FindFirstChild("HumanoidRootPart").CFrame.LookVector) * 1, -otchr:FindFirstChild("HumanoidRootPart").CFrame.LookVector)
-							chr:PivotTo(cframe)
+							chr:PivotTo(otchr:GetPivot())
 							bat:Activate()
 						elseif dist > 10 and attacked[pl] then
 							attacked[pl]=false
@@ -84,7 +84,3 @@ local function killAuraLoop()
 end
 
 killAuraLoop()
-
-local function LockLoop()
-	
-end
