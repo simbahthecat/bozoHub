@@ -47,7 +47,7 @@ end
 
 
 if game.PlaceId == 109983668079237 or 1+1==2 then
-	Notify("bozoHub Loaded, Steal A Brainrot detected update 2",3.5)
+	Notify("bozoHub Loaded, Steal A Brainrot detected update 3",3.5)
 	repeat
 		task.wait()
 	until game.Players.LocalPlayer.Backpack:FindFirstChild("Tung Bat")
@@ -70,8 +70,11 @@ local function killAuraLoop()
 						local dist = (hrp.Position - otchr:FindFirstChild("HumanoidRootPart").Position).Magnitude
 						if dist <= 10 and not attacked[pl] then
 							attacked[pl]=true
-							chr:PivotTo(otchr:GetPivot())
+							
 							bat:Activate()
+							task.wait(0.3)
+							chr:PivotTo(otchr:GetPivot())
+							
 						elseif dist > 10 and attacked[pl] then
 							attacked[pl]=false
 						end
