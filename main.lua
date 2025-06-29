@@ -44,10 +44,18 @@ local function Notify(string:string, duration:number)
 	end)
 end
 
+local function findHome()
+	for i,v in game.Workspace.Plots:GetChildren() do
+		if v:FindFirstChild("PlotSign"):FindFirstChild("YourBase").Enabled then
+			return v
+		end
+	end
+end
 
+oh = findHome()
 
 if game.PlaceId == 109983668079237 or 1+1==2 then
-	Notify("bozoHub Loaded, Steal A Brainrot detected update 3",3.5)
+	Notify("bozoHub Loaded, Steal A Brainrot detected!",3.5)
 	repeat
 		task.wait()
 	until game.Players.LocalPlayer.Backpack:FindFirstChild("Tung Bat")
@@ -86,3 +94,9 @@ local function killAuraLoop()
 end
 
 killAuraLoop()
+
+local function sellTestLoop()
+	while task.wait() do
+		oh:FindFirstChild("AnimalPodiums"):FindFirstChild("1"):FindFirstChild("Base"):FindFirstChild("Spawn"):FindFirstChildOfClass("Attachment"):FindFirstChildOfClass("ProximityPrompt").HoldTime = 0
+	end
+end
