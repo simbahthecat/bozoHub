@@ -55,7 +55,7 @@ end
 oh = findHome()
 
 if game.PlaceId == 109983668079237 or 1+1==2 then
-	Notify("bozoHub Loaded, Steal A Brainrot detected!",3.5)
+	Notify("bozoHub Loaded, Steal A Brainrot detected  2",3.5)
 	repeat
 		task.wait()
 	until game.Players.LocalPlayer.Backpack:FindFirstChild("Tung Bat")
@@ -97,6 +97,6 @@ killAuraLoop()
 
 local function sellTestLoop()
 	while task.wait() do
-		oh:FindFirstChild("AnimalPodiums"):FindFirstChild("1"):FindFirstChild("Base"):FindFirstChild("Spawn"):FindFirstChildOfClass("Attachment"):FindFirstChildOfClass("ProximityPrompt").HoldTime = 0
+		oh:FindFirstChild("AnimalPodiums"):FindFirstChild("1"):FindFirstChild("Base"):FindFirstChild("Spawn"):FindFirstChildOfClass("Attachment"):FindFirstChildOfClass("ProximityPrompt"):InputHoldBegin()
 	end
 end
