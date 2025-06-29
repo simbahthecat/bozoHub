@@ -1,4 +1,3 @@
-local a = game:GetService("PlacesService")
 local oh
 local gui
 local tws = game:GetService("TweenService")
