@@ -72,7 +72,7 @@ local function killAuraLoop()
 							attacked[pl]=true
 							
 							bat:Activate()
-							task.wait(0.3)
+							task.wait(0.2)
 							chr:PivotTo(otchr:GetPivot())
 							
 						elseif dist > 10 and attacked[pl] then
