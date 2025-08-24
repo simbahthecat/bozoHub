@@ -137,15 +137,6 @@ function campfireFuelLoop()
 	lastPos = hum.CFrame
 		for _, item in pairs(fuel) do
 			hum.CFrame = item:GetPivot()
-		local part = item:FindFirstChildWhichIsA("BasePart")
-		if part then
-			hum.CFrame = part.CFrame
-			task.wait(0.2)
-			game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem"):InvokeServer(sack, item)
-
-			task.wait(0.2)
-		else
-			hum.CFrame = part:GetPivot()
 			task.wait(0.2)
 			game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem"):InvokeServer(sack, game.ReplicatedStorage.TempStorage[item.name])
 
