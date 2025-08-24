@@ -1,11 +1,11 @@
-local plr = game.Players.LocalPlayer
+local plr = game:GetService("Players").LocalPlayer
 local chr
 local hum
 local loadr = game:GetService("ContentProvider")
 local user = game:GetService("UserInputService")
 
-plr.Character = chr
-plr.Character:FindFirstChild("HumanoidRootPart") = hum
+chr = plr.Character or plr.CharacterAdded:Wait()
+hum = chr:FindFirstChild("HumanoidRootPart")
 
 Instance.new("BlurEffect",game.Lighting).Size = 10
 
