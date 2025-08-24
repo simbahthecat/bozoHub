@@ -109,7 +109,7 @@ function tptocampfire()
 	end
 
 function fuelit()
-	for i,v in workspace.Items do
+	for i,v in workspace.Items:GetChildren() do
 		if v:GetAttribute("BurnFuel") then
 			store(v)
 			tptocampfire()
