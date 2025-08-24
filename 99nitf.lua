@@ -123,4 +123,11 @@ end
 
 task.wait(5)
 
+getKids()
+
 gui:Destroy()
+for i,v in game.Lighting do
+	if v.name == "BlurEffect" then
+		v:Destroy()
+	end
+end
