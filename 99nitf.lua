@@ -1,51 +1,43 @@
-local plr = game:GetService("Players").LocalPlayer
-local chr
-local hum
-local loadr = game:GetService("ContentProvider")
-local user = game:GetService("UserInputService")
+local Library = loadstring(game:HttpGetAsync("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/latest/download/Fluent.luau"))()
 
-chr = plr.Character or plr.CharacterAdded:Wait()
-hum = chr:FindFirstChild("HumanoidRootPart")
+local Window = Library:CreateWindow{
+	Title = "Items Manager",
+	SubTitle = "by bac0nh1ckoff",
+	TabWidth = 160,
+	Size = UDim2.fromOffset(530, 325),
+	Resize = true,
+	MinSize = Vector2.new(470, 380),
+	Acrylic = true,
+	Theme = "Dark",
+	MinimizeKey = Enum.KeyCode.Q
+}
 
-local gui = Instance.new("ScreenGui")
-gui.Parent = plr.PlayerGui
-gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = true
-gui.Name = "popcogui"
-local mainfr = Instance.new("Frame")
-mainfr.Name = "main"
-mainfr.Parent = gui
-mainfr.Size = UDim2.new(1,0,1,0)
-mainfr.Transparency = 1
-local text = Instance.new("TextLabel")
-text.Parent = mainfr
-text.Position = UDim2.new(0.5,0,0.5,0)
-text.Text = "popco farm"
-text.Name = "text"
-text.Font = Enum.Font.Arimo
-text.BackgroundTransparency = 1
-text.TextTransparency = 0.1
-text.TextColor3 = Color3.new(1,1,1)
---text.TextSize = 20
-text.TextScaled = true
-text.Size = UDim2.new(0.123,0,0.072,0)
-local stroke = Instance.new("UIStroke")
-stroke.Parent = text
-stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
-stroke.Name = "stroke"
-local uigradient = Instance.new("UIGradient")
-uigradient.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0), Color3.fromRGB(140, 36, 36))
-uigradient.Parent = text
-uigradient.Name = "uigradient"
-uigradient.Rotation = 0
-loadr:PreloadAsync(gui:GetDescendants())
-task.spawn(function()
-	while task.wait(0.01) do
-		uigradient.Rotation += 1
-	end
-end)
+local Tabs = {
+	Main = Window:CreateTab{
+		Title = "Main",
+		Icon = "phosphor-users-bold"
+	}
+}
 
-local inventory = plr:WaitForChild("Backpack")
+local Options = Library.Options
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+local character
+local humanoidRootPart
+local inventory = player:WaitForChild("Inventory")
+
+local function onCharacterAdded(char)
+	character = char
+	humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+end
+
+player.CharacterAdded:Connect(onCharacterAdded)
+if player.Character then
+	onCharacterAdded(player.Character)
+end
+
 local sack = nil
 local function findSack()
 	for _, item in pairs(inventory:GetChildren()) do
@@ -76,7 +68,6 @@ local lastPos = nil
 local items = {}
 local kids = {}
 local name = nil
-local fuel = {}
 
 local function isSackFull()
 	if not sack then return true end
@@ -85,87 +76,148 @@ local function isSackFull()
 	return current ~= nil and capacity ~= nil and current >= capacity
 end
 
-function emptySack()
-	if not sack then return end
-	local current = sack:GetAttribute("NumberItems")
-	local capacity = sack:GetAttribute("Capacity")
-	if current ~= nil and capacity ~= nil and current >= capacity then
-		game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem"):InvokeServer(sack, nil)
-	end
-end
-
 local function store(item)
 	if not sack then return end
 	local part = item:FindFirstChildWhichIsA("BasePart")
 	if part then
-		hum.CFrame = part.CFrame
+		humanoidRootPart.CFrame = part.CFrame
 		task.wait(0.2)
-		game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem"):InvokeServer(sack, item)
-
+		ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem"):InvokeServer(sack, item)
 		task.wait(0.2)
-	else
-		hum.CFrame = part:GetPivot()
-		task.wait(0.2)
-		game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem"):InvokeServer(sack, game.ReplicatedStorage.TempStorage[item.name])
-		
-		task.wait(0.2)
-
 	end
 end
 
-function getKidsAsClass() 
-	for _, kid in pairs(characters:GetChildren()) do
-		if string.find(kid.Name, "Child") then
-			table.insert(kids, kid)
-		end
-	end
-end
-
-getKidsAsClass()
-
-function getFuelAsClass()
-	fuel = {}
-	for i,v: Model in workspace.Items:GetChildren() do
-		if v:GetAttribute("BurnFuel") then
-			table.insert(fuel, v)
-		end
-	end
-end
-getFuelAsClass()
-
-function campfireFuelLoop()
-	lastPos = hum.CFrame
-		for _, item in pairs(fuel) do
-			hum.CFrame = item:GetPivot()
-			task.wait(0.2)
-			game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem"):InvokeServer(sack, game.ReplicatedStorage.TempStorage[item.name])
-
-			task.wait(0.2)
-
-			hum.CFrame = workspace.Map.Campground.MainFire.Center.CFrame * CFrame.new(0,13,0)
-			game:GetService("ReplicatedStorage").RemoteEvents.RequestBagDropItem:FireServer(sack, workspace.Items[item.name], true)
-		end
-	hum.CFrame = lastPos
-end
-
-campfireFuelLoop()
-
-function getKids()
-lastPos = hum.CFrame
-pcall(function ()
-	
-	for _, item in pairs(kids) do
-		if isSackFull() then break end
-		if item.Name == name then
-			store(item)
-		end
-	end
+local Items = Tabs.Main:CreateDropdown("ItemsList", {
+	Title = "Items List",
+	Values = items,
+	Multi = false,
+	Default = "",
+})
+Items:OnChanged(function(Value)
+	name = Value
 end)
-hum.CFrame = lastPos
+
+local Kids = Tabs.Main:CreateDropdown("KidsList", {
+	Title = "Kids List",
+	Values = kids,
+	Multi = false,
+	Default = "",
+})
+Kids:OnChanged(function(Value)
+	name = Value
+end)
+
+local debounce = false
+local function updateItemsDropdown()
+	if debounce then return end
+	debounce = true
+
+	task.delay(0.1, function()
+		if not Items then return end
+
+		local uniqueItems = {}
+		local addedNames = {}
+
+		for _, itm in pairs(itemsFolder:GetChildren()) do
+			if typeof(itm.Name) == "string" and not addedNames[itm.Name] then
+				table.insert(uniqueItems, itm.Name)
+				addedNames[itm.Name] = true
+			end
+		end
+
+		items = uniqueItems
+		if typeof(Items.SetValues) == "function" then
+			pcall(function()
+				Items:SetValues(items)
+			end)
+		end
+
+		debounce = false
+	end)
 end
 
-task.wait(5)
+local debounce2 = false
+local function updateKidsDropdown()
+	if debounce2 then return end
+	debounce2 = true
 
-getKids()
+	task.delay(0.1, function ()
+		if not Kids then return end
 
-gui:Destroy()
+		local uniqueKids = {}
+
+		for _, kid in pairs(characters:GetChildren()) do
+			if string.find(kid.Name, "Child") then
+				table.insert(uniqueKids, kid.Name)
+			end
+		end
+
+		kids = uniqueKids
+		if typeof(Kids.SetValue) == "function" then
+			pcall(function ()
+				Kids:SetValues(kids)
+			end)
+		end
+
+		debounce2 = false
+	end)
+end
+
+updateItemsDropdown()
+updateKidsDropdown()
+
+Tabs.Main:CreateButton{
+	Title = "Bring Item",
+	Description = "",
+	Callback = function()
+		lastPos = humanoidRootPart.CFrame
+		pcall(function ()
+			local all = {}
+			for _, obj in pairs(itemsFolder:GetChildren()) do table.insert(all, obj) end
+			for _, obj in pairs(characters:GetChildren()) do table.insert(all, obj) end
+
+			for _, item in pairs(all) do
+				if isSackFull() then break end
+				if item.Name == name then
+					store(item)
+				end
+			end
+		end)
+		humanoidRootPart.CFrame = lastPos
+	end
+}
+
+Tabs.Main:CreateButton{
+	Title = "Teleport to Item",
+	Description = "",
+	Callback = function()
+		local item = itemsFolder:FindFirstChild(name) or characters:FindFirstChild(name)
+		if item then
+			local part = item:FindFirstChildWhichIsA("BasePart")
+			if part then
+				humanoidRootPart.CFrame = part.CFrame
+			end
+		end
+	end
+}
+
+local campfire = workspace:FindFirstChild("Map"):FindFirstChild("Campground"):FindFirstChild("MainFire")
+Tabs.Main:CreateButton{
+	Title = "Teleport to Campfire",
+	Description = "",
+	Callback = function()
+		if campfire then
+			local center = campfire:FindFirstChild("Center")
+			if center then
+				humanoidRootPart.CFrame = center.CFrame * CFrame.new(0, 13, 0)
+			end
+		end
+	end
+}
+
+itemsFolder.ChildAdded:Connect(updateItemsDropdown)
+itemsFolder.ChildRemoved:Connect(updateItemsDropdown)
+characters.ChildAdded:Connect(updateKidsDropdown)
+characters.ChildRemoved:Connect(updateKidsDropdown)
+
+Window:SelectTab(1)
