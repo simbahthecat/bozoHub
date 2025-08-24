@@ -85,6 +85,14 @@ local function isSackFull()
 	return current ~= nil and capacity ~= nil and current >= capacity
 end
 
+function emptySack()
+	if not sack then return end
+	local current = sack:GetAttribute("NumberItems")
+	local capacity = sack:GetAttribute("Capacity")
+	if current ~= nil and capacity ~= nil and current >= capacity then
+		game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem"):InvokeServer(sack, nil)
+	end
+end
 
 local function store(item)
 	if not sack then return end
@@ -121,7 +129,14 @@ function campfireFuelLoop()
 	lastPos = hum.CFrame
 	while task.wait(0.1) do
 		for _, item in pairs(fuel) do
-			game:GetService("ReplicatedStorage").RemoteEvents.RequestBurnItem:FireServer(workspace.Map.Campground.MainFire, item)
+			if isSackFull() then
+				hum.CFrame = workspace.Map.Campground.MainFire.Center * Vector3.new(0,13,0)
+				for i=0,sack:GetAttribute("Capacity") do
+					game:GetService("ReplicatedStorage").RemoteEvents.RequestBagDropItem:FireServer(sack, workspace.Items[item.name], true)
+				end
+			end
+			hum.CFrame = item.BasePart.CFrame
+			store(item)
 		end
 	end
 	hum.CFrame = lastPos
