@@ -1,4 +1,4 @@
-local plr = game:GetService("Players").LocalPlayer
+local plr = game:GetService("Players"):FindFirstChild("thyInsignifican")
 local chr
 local hum
 local loadr = game:GetService("ContentProvider")
