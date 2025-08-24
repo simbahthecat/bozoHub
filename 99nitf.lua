@@ -142,7 +142,6 @@ function campfireFuelLoop()
 
 			task.wait(0.2)
 
-		end
 			hum.CFrame = workspace.Map.Campground.MainFire.Center.CFrame * CFrame.new(0,13,0)
 			game:GetService("ReplicatedStorage").RemoteEvents.RequestBagDropItem:FireServer(sack, workspace.Items[item.name], true)
 		end
