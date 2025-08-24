@@ -1,4 +1,4 @@
-local plr = game:GetService("Players"):FindFirstChild("thyInsignifican")
+local plr = game:GetService("Players").LocalPlayer
 local chr
 local hum
 local loadr = game:GetService("ContentProvider")
@@ -6,8 +6,6 @@ local user = game:GetService("UserInputService")
 
 chr = plr.Character or plr.CharacterAdded:Wait()
 hum = chr:FindFirstChild("HumanoidRootPart")
-
-Instance.new("BlurEffect",game.Lighting).Size = 10
 
 local gui = Instance.new("ScreenGui")
 gui.Parent = plr.PlayerGui
@@ -78,6 +76,7 @@ local lastPos = nil
 local items = {}
 local kids = {}
 local name = nil
+local fuel = {}
 
 local function isSackFull()
 	if not sack then return true end
@@ -98,16 +97,41 @@ local function store(item)
 		task.wait(0.2)
 	end
 end
+
+function getKidsAsClass() 
+	for _, kid in pairs(characters:GetChildren()) do
+		if string.find(kid.Name, "Child") then
+			table.insert(kids, kid)
+		end
+	end
+end
+
+getKidsAsClass()
+
+function getFuelAsClass()
+	for i,v: Model in workspace.Items:GetChildren() do
+		if v:GetAttribute("BurnFuel") then
+			table.insert(fuel, v)
+		end
+	end
+end
+getFuelAsClass()
+
+function campfireFuelLoop()
+	lastPos = hum.CFrame
+	while task.wait(0.1) do
+		for _, item in pairs(fuel) do
+			game:GetService("ReplicatedStorage").RemoteEvents.RequestBurnItem:FireServer(workspace.Map.Campground.MainFire, item)
+		end
+	end
+	hum.CFrame = lastPos
+end
+
+campfireFuelLoop()
+
 function getKids()
 lastPos = hum.CFrame
 pcall(function ()
-	local kids = {}
-	
-		for _, kid in pairs(characters:GetChildren()) do
-			if string.find(kid.Name, "Child") then
-				table.insert(kids, kid.Name)
-			end
-		end
 	
 	for _, item in pairs(kids) do
 		if isSackFull() then break end
@@ -124,8 +148,3 @@ task.wait(5)
 getKids()
 
 gui:Destroy()
-for i,v in game.Lighting do
-	if v.name == "BlurEffect" then
-		v:Destroy()
-	end
-end
