@@ -1,25 +1,3 @@
-local Library = loadstring(game:HttpGetAsync("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/latest/download/Fluent.luau"))()
-
-local Window = Library:CreateWindow{
-	Title = "Items Manager",
-	SubTitle = "by bac0nh1ckoff",
-	TabWidth = 160,
-	Size = UDim2.fromOffset(530, 325),
-	Resize = true,
-	MinSize = Vector2.new(470, 380),
-	Acrylic = true,
-	Theme = "Dark",
-	MinimizeKey = Enum.KeyCode.Q
-}
-
-local Tabs = {
-	Main = Window:CreateTab{
-		Title = "Main",
-		Icon = "phosphor-users-bold"
-	}
-}
-
-local Options = Library.Options
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -87,89 +65,12 @@ local function store(item)
 	end
 end
 
-local Items = Tabs.Main:CreateDropdown("ItemsList", {
-	Title = "Items List",
-	Values = items,
-	Multi = false,
-	Default = "",
-})
-Items:OnChanged(function(Value)
-	name = Value
-end)
-
-local Kids = Tabs.Main:CreateDropdown("KidsList", {
-	Title = "Kids List",
-	Values = kids,
-	Multi = false,
-	Default = "",
-})
-Kids:OnChanged(function(Value)
-	name = Value
-end)
-
-local debounce = false
-local function updateItemsDropdown()
-	if debounce then return end
-	debounce = true
-
-	task.delay(0.1, function()
-		if not Items then return end
-
-		local uniqueItems = {}
-		local addedNames = {}
-
-		for _, itm in pairs(itemsFolder:GetChildren()) do
-			if typeof(itm.Name) == "string" and not addedNames[itm.Name] then
-				table.insert(uniqueItems, itm.Name)
-				addedNames[itm.Name] = true
-			end
-		end
-
-		items = uniqueItems
-		if typeof(Items.SetValues) == "function" then
-			pcall(function()
-				Items:SetValues(items)
-			end)
-		end
-
-		debounce = false
-	end)
+function unstoreItem(name)
+	if not sack then return end
+	ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagDropItem"):FireServer(sack, workspace.Items[name], true)
 end
 
-local debounce2 = false
-local function updateKidsDropdown()
-	if debounce2 then return end
-	debounce2 = true
-
-	task.delay(0.1, function ()
-		if not Kids then return end
-
-		local uniqueKids = {}
-
-		for _, kid in pairs(characters:GetChildren()) do
-			if string.find(kid.Name, "Child") then
-				table.insert(uniqueKids, kid.Name)
-			end
-		end
-
-		kids = uniqueKids
-		if typeof(Kids.SetValue) == "function" then
-			pcall(function ()
-				Kids:SetValues(kids)
-			end)
-		end
-
-		debounce2 = false
-	end)
-end
-
-updateItemsDropdown()
-updateKidsDropdown()
-
-Tabs.Main:CreateButton{
-	Title = "Bring Item",
-	Description = "",
-	Callback = function()
+function bringitem(name)
 		lastPos = humanoidRootPart.CFrame
 		pcall(function ()
 			local all = {}
@@ -185,12 +86,9 @@ Tabs.Main:CreateButton{
 		end)
 		humanoidRootPart.CFrame = lastPos
 	end
-}
 
-Tabs.Main:CreateButton{
-	Title = "Teleport to Item",
-	Description = "",
-	Callback = function()
+
+function tptoitem()
 		local item = itemsFolder:FindFirstChild(name) or characters:FindFirstChild(name)
 		if item then
 			local part = item:FindFirstChildWhichIsA("BasePart")
@@ -199,13 +97,9 @@ Tabs.Main:CreateButton{
 			end
 		end
 	end
-}
 
 local campfire = workspace:FindFirstChild("Map"):FindFirstChild("Campground"):FindFirstChild("MainFire")
-Tabs.Main:CreateButton{
-	Title = "Teleport to Campfire",
-	Description = "",
-	Callback = function()
+function tptocampfire()
 		if campfire then
 			local center = campfire:FindFirstChild("Center")
 			if center then
@@ -213,11 +107,15 @@ Tabs.Main:CreateButton{
 			end
 		end
 	end
-}
 
-itemsFolder.ChildAdded:Connect(updateItemsDropdown)
-itemsFolder.ChildRemoved:Connect(updateItemsDropdown)
-characters.ChildAdded:Connect(updateKidsDropdown)
-characters.ChildRemoved:Connect(updateKidsDropdown)
+function fuelit()
+	for i,v in workspace.Items do
+		if v:GetAttribute("BurnFuel") then
+			store(v)
+			tptocampfire()
+			unstoreItem(v)
+		end
+	end
+end
 
-Window:SelectTab(1)
+fuelit()
