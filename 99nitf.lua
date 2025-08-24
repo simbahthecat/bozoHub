@@ -127,16 +127,12 @@ getFuelAsClass()
 
 function campfireFuelLoop()
 	lastPos = hum.CFrame
-	while task.wait(0.1) do
+	while task.wait(0.5) do
 		for _, item in pairs(fuel) do
-			if isSackFull() then
-				hum.CFrame = workspace.Map.Campground.MainFire.Center.CFrame * CFrame.new(0,13,0)
-				for i=0,sack:GetAttribute("Capacity") do
-					game:GetService("ReplicatedStorage").RemoteEvents.RequestBagDropItem:FireServer(sack, workspace.Items[item.name], true)
-				end
-			end
 			hum.CFrame = item.BasePart.CFrame
 			store(item)
+			hum.CFrame = workspace.Map.Campground.MainFire.Center.CFrame * CFrame.new(0,13,0)
+			game:GetService("ReplicatedStorage").RemoteEvents.RequestBagDropItem:FireServer(sack, workspace.Items[item.name], true)
 		end
 	end
 	hum.CFrame = lastPos
