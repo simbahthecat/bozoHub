@@ -103,6 +103,13 @@ local function store(item)
 		game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem"):InvokeServer(sack, item)
 
 		task.wait(0.2)
+	else
+		hum.CFrame = part:GetPivot()
+		task.wait(0.2)
+		game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem"):InvokeServer(sack, game.ReplicatedStorage.TempStorage[item.name])
+		
+		task.wait(0.2)
+
 	end
 end
 
