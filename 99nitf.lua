@@ -124,6 +124,7 @@ end
 getKidsAsClass()
 
 function getFuelAsClass()
+	fuel = {}
 	for i,v: Model in workspace.Items:GetChildren() do
 		if v:GetAttribute("BurnFuel") then
 			table.insert(fuel, v)
@@ -136,7 +137,21 @@ function campfireFuelLoop()
 	lastPos = hum.CFrame
 		for _, item in pairs(fuel) do
 			hum.CFrame = item:GetPivot()
-			store(item)
+		local part = item:FindFirstChildWhichIsA("BasePart")
+		if part then
+			hum.CFrame = part.CFrame
+			task.wait(0.2)
+			game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem"):InvokeServer(sack, item)
+
+			task.wait(0.2)
+		else
+			hum.CFrame = part:GetPivot()
+			task.wait(0.2)
+			game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem"):InvokeServer(sack, game.ReplicatedStorage.TempStorage[item.name])
+
+			task.wait(0.2)
+
+		end
 			hum.CFrame = workspace.Map.Campground.MainFire.Center.CFrame * CFrame.new(0,13,0)
 			game:GetService("ReplicatedStorage").RemoteEvents.RequestBagDropItem:FireServer(sack, workspace.Items[item.name], true)
 		end
