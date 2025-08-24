@@ -130,7 +130,7 @@ function campfireFuelLoop()
 	while task.wait(0.1) do
 		for _, item in pairs(fuel) do
 			if isSackFull() then
-				hum.Position = workspace.Map.Campground.MainFire.Center.Position * Vector3.new(0,13,0)
+				hum.CFrame = workspace.Map.Campground.MainFire.Center.CFrame * CFrame.new(0,13,0)
 				for i=0,sack:GetAttribute("Capacity") do
 					game:GetService("ReplicatedStorage").RemoteEvents.RequestBagDropItem:FireServer(sack, workspace.Items[item.name], true)
 				end
