@@ -4,10 +4,8 @@ local hum
 local loadr = game:GetService("ContentProvider")
 local user = game:GetService("UserInputService")
 
-plr.CharacterAdded:Connect(function(char)
-	chr = char
-	hum = char:FindFirstChild("HumanoidRootPart")
-end)
+plr.Character = chr
+plr.Character:FindFirstChild("HumanoidRootPart") = hum
 
 Instance.new("BlurEffect",game.Lighting).Size = 10
 
